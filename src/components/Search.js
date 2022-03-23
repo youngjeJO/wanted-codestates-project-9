@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 function Search() {
+  const [inputData, setinputData] = useState('');
+  const [getData, setGetData] = useState([]);
+
+  const URL = process.env.REACT_APP_SEARCH_KEY;
+  useEffect(async () => {
+    const { data } = await axios.get(URL + inputData);
+    setGetData(data);
+  }, [inputData]);
+
+  const onChange = (e) => {
+    setinputData(e.target.value);
+  };
+
   return (
     <MainContainer>
       <Textbox>
@@ -9,10 +23,19 @@ function Search() {
         <p>온라인으로 참여하기</p>
       </Textbox>
       <SearchBar>
-        <input type="text" placeholder="질환명을 입력해 주세요" />
+        <input
+          type="text"
+          placeholder="질환명을 입력해 주세요"
+          value={inputData}
+          onChange={onChange}
+        />
         <button type="button">검색</button>
       </SearchBar>
-      <Result>{}</Result>
+      <Result inputData={inputData}>
+        {inputData
+          ? getData.slice(0, 10).map((item) => <li>{item.name}</li>)
+          : null}
+      </Result>
     </MainContainer>
   );
 }
@@ -23,11 +46,11 @@ const MainContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 `;
 
 const Textbox = styled.div`
+  margin-top: 8%;
   font-weight: bold;
 
   p {
@@ -66,8 +89,20 @@ const SearchBar = styled.form`
 `;
 
 const Result = styled.ul`
+  display: ${({ inputData }) => (inputData ? 'block' : 'none')}
+  padding: 5px 40px;
   width: 50%;
   box-sizing: border-box;
   background-color: #ffffff;
   border-radius: 40px;
+
+  li {
+    padding: 5px 10px;
+    list-style: none;
+    border-radius: 40px;
+  }
+
+  li:hover {
+    background-color: #eeeeee;
+  }
 `;
