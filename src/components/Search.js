@@ -5,15 +5,36 @@ import axios from 'axios';
 function Search() {
   const [inputData, setinputData] = useState('');
   const [getData, setGetData] = useState([]);
+  const [selectIndex, setSelectIndex] = useState(-1);
 
   const URL = process.env.REACT_APP_SEARCH_KEY;
   useEffect(async () => {
     const { data } = await axios.get(URL + inputData);
-    setGetData(data);
+    setGetData(data.slice(0, 10));
   }, [inputData]);
 
   const onChange = (e) => {
     setinputData(e.target.value);
+  };
+
+  const searchItem = (e) => {
+    e.preventDefault();
+    const selectedItem = document.querySelectorAll('.resultList');
+    setinputData(selectedItem[selectIndex].innerText);
+    setSelectIndex(-1);
+  };
+
+  const keyDown = (e) => {
+    const dataLenght = getData.slice(0, 10).length;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (selectIndex >= dataLenght - 1) return;
+      setSelectIndex(selectIndex + 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (selectIndex === 0) return;
+      setSelectIndex(selectIndex - 1);
+    }
   };
 
   return (
@@ -22,18 +43,31 @@ function Search() {
         <p>국내 모든 임상시험 검색하고</p>
         <p>온라인으로 참여하기</p>
       </Textbox>
-      <SearchBar>
+      <SearchBar onSubmit={searchItem}>
         <input
           type="text"
           placeholder="질환명을 입력해 주세요"
           value={inputData}
           onChange={onChange}
+          onKeyDown={keyDown}
         />
         <button type="button">검색</button>
       </SearchBar>
       <Result inputData={inputData}>
+        {getData.length >= 1 ? (
+          <ResultItem className="listTitle">추천 검색어</ResultItem>
+        ) : (
+          <ResultItem className="listTitle">검색어 없음</ResultItem>
+        )}
         {inputData
-          ? getData.slice(0, 10).map((item) => <li>{item.name}</li>)
+          ? getData.map((item, index) => (
+              <ResultItem
+                className="resultList"
+                selected={index === selectIndex}
+              >
+                {item.name}
+              </ResultItem>
+            ))
           : null}
       </Result>
     </MainContainer>
@@ -89,20 +123,28 @@ const SearchBar = styled.form`
 `;
 
 const Result = styled.ul`
-  display: ${({ inputData }) => (inputData ? 'block' : 'none')}
-  padding: 5px 40px;
+  display: ${({ inputData }) => (inputData ? 'block' : 'none')};
+  padding: 0px 40px;
   width: 50%;
   box-sizing: border-box;
   background-color: #ffffff;
   border-radius: 40px;
-
-  li {
-    padding: 5px 10px;
-    list-style: none;
-    border-radius: 40px;
+  overflow: hidden;
+  .listTitle {
+    font-size: 5px;
   }
+  .listTitle:hover {
+    background-color: #ffffff;
+  }
+`;
 
-  li:hover {
+const ResultItem = styled.li`
+  padding: 5px 10px;
+  list-style: none;
+  border-radius: 40px;
+  background-color: ${({ selected }) => (selected ? '#eeeeee' : '#ffffff')};
+
+  :hover {
     background-color: #eeeeee;
   }
 `;
