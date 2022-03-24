@@ -15,6 +15,9 @@
   "rules": {
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "comma-dangle": "off",
-    "linebreak-style": 0
+    "linebreak-style": 0,
+    "react/no-array-index-key": "off",
+    "space-before-function-paren": "off",
+    "multiline-ternary": "off"
   }
 }
