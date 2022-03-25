@@ -7,7 +7,7 @@
 
 ## 배포링크
 
-[🚀 배포 링크]https://fabulous-quokka-386634.netlify.app/
+[🚀 배포 링크](https://fabulous-quokka-386634.netlify.app/)
 
 ## 실행 방법
 
