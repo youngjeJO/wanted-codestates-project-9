@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { pushData, createData } from '../store/searchSlice';
 
 function Search() {
   const [inputData, setinputData] = useState('');
-  const [getData, setGetData] = useState([]);
   const [selectIndex, setSelectIndex] = useState(-1);
+  const { localData, searchData } = useSelector((state) => state.searchSlice);
+  const dispatch = useDispatch();
 
   const URL = process.env.REACT_APP_SEARCH_KEY;
+
   useEffect(async () => {
-    const { data } = await axios.get(URL + inputData);
-    setGetData(data.slice(0, 10));
-  }, [inputData]);
+    if (localData.getItem(inputData)) {
+      dispatch(createData(JSON.parse(localData.getItem(inputData))));
+    } else {
+      const { data } = await axios.get(URL + inputData);
+      dispatch(createData(data.slice(0, 7)));
+    }
+  }, [inputData, selectIndex]);
 
   const onChange = (e) => {
     setinputData(e.target.value);
@@ -19,21 +27,27 @@ function Search() {
 
   const searchItem = (e) => {
     e.preventDefault();
-    const selectedItem = document.querySelectorAll('.resultList');
-    setinputData(selectedItem[selectIndex].innerText);
-    setSelectIndex(-1);
+    if (selectIndex !== -1) {
+      setSelectIndex(-1);
+      dispatch(pushData(inputData));
+    } else {
+      dispatch(pushData(inputData));
+    }
   };
 
   const keyDown = (e) => {
-    const dataLenght = getData.slice(0, 10).length;
+    const dataLenght = searchData.slice(0, 7).length;
+    const selectedItem = document.querySelectorAll('.resultList');
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       if (selectIndex >= dataLenght - 1) return;
       setSelectIndex(selectIndex + 1);
+      setinputData(selectedItem[selectIndex + 1].innerText);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (selectIndex === 0) return;
       setSelectIndex(selectIndex - 1);
+      setinputData(selectedItem[selectIndex - 1].innerText);
     }
   };
 
@@ -54,13 +68,13 @@ function Search() {
         <button type="button">검색</button>
       </SearchBar>
       <Result inputData={inputData}>
-        {getData.length >= 1 ? (
+        {searchData.length >= 1 ? (
           <ResultItem className="listTitle">추천 검색어</ResultItem>
         ) : (
           <ResultItem className="listTitle">검색어 없음</ResultItem>
         )}
         {inputData
-          ? getData.map((item, index) => (
+          ? searchData.map((item, index) => (
               <ResultItem
                 className="resultList"
                 selected={index === selectIndex}
