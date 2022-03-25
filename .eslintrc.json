@@ -3,7 +3,11 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["plugin:react/recommended", "airbnb"],
+  "extends": [
+    "plugin:react/recommended",
+    "airbnb",
+    "plugin:prettier/recommended"
+  ],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -13,11 +17,22 @@
   },
   "plugins": ["react"],
   "rules": {
+    "object-curly-newline": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "comma-dangle": "off",
     "linebreak-style": 0,
     "react/no-array-index-key": "off",
     "space-before-function-paren": "off",
-    "multiline-ternary": "off"
+    "multiline-ternary": "off",
+    "no-param-reassign": "off",
+    "linebreak-style": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "parser": "flow",
+        "endOfLine": "auto"
+      }
+    ]
   }
 }
