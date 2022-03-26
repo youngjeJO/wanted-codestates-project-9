@@ -5,24 +5,36 @@ import { useDispatch, useSelector } from 'react-redux';
 import { pushData, createData } from '../store/searchSlice';
 
 function Search() {
-  const [inputData, setinputData] = useState('');
+  const [inputData, setinputData] = useState(null);
   const [selectIndex, setSelectIndex] = useState(-1);
-  const { localData, searchData } = useSelector((state) => state.searchSlice);
+  const { preventData } = useSelector((state) => state.searchSlice);
+  const [checkError, setCheckError] = useState(true);
   const dispatch = useDispatch();
 
-  const URL = process.env.REACT_APP_SEARCH_KEY;
-
   useEffect(async () => {
-    if (localData.getItem(inputData)) {
-      dispatch(createData(JSON.parse(localData.getItem(inputData))));
-    } else {
-      const { data } = await axios.get(URL + inputData);
-      dispatch(createData(data.slice(0, 7)));
+    if (localStorage.getItem(inputData)) {
+      dispatch(createData(JSON.parse(localStorage.getItem(inputData))));
+    } else if (inputData) {
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_SEARCH_KEY}?name=${inputData}`
+        );
+        dispatch(createData(data.slice(0, 7)));
+      } catch {
+        setCheckError(!checkError);
+      }
     }
   }, [inputData, selectIndex]);
 
+  let debounve;
   const onChange = (e) => {
-    setinputData(e.target.value);
+    const inputVal = e.target.value.trim();
+    if (debounve) {
+      clearTimeout(debounve);
+    }
+    debounve = setTimeout(() => {
+      setinputData(inputVal);
+    }, 400);
   };
 
   const searchItem = (e) => {
@@ -36,7 +48,7 @@ function Search() {
   };
 
   const keyDown = (e) => {
-    const dataLenght = searchData.slice(0, 7).length;
+    const dataLenght = preventData.slice(0, 7).length;
     const selectedItem = document.querySelectorAll('.resultList');
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -61,20 +73,21 @@ function Search() {
         <input
           type="text"
           placeholder="질환명을 입력해 주세요"
-          value={inputData}
           onChange={onChange}
           onKeyDown={keyDown}
         />
-        <button type="button">검색</button>
+        <button type="button" onClick={searchItem}>
+          검색
+        </button>
       </SearchBar>
       <Result inputData={inputData}>
-        {searchData.length >= 1 ? (
+        {preventData.length >= 1 ? (
           <ResultItem className="listTitle">추천 검색어</ResultItem>
         ) : (
           <ResultItem className="listTitle">검색어 없음</ResultItem>
         )}
         {inputData
-          ? searchData.map((item, index) => (
+          ? preventData.map((item, index) => (
               <ResultItem
                 className="resultList"
                 selected={index === selectIndex}
@@ -133,6 +146,7 @@ const SearchBar = styled.form`
     font-weight: bold;
     font-size: 16px;
     border: none;
+    cursor: pointer;
   }
 `;
 
