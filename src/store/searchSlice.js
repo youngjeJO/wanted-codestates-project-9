@@ -1,8 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  searchData: [],
-  localData: localStorage,
+  preventData: [],
 };
 
 const searchDataSlice = createSlice({
@@ -10,10 +9,10 @@ const searchDataSlice = createSlice({
   initialState,
   reducers: {
     createData(state, action) {
-      state.searchData = action.payload;
+      state.preventData = action.payload;
     },
     pushData(state, action) {
-      state.localData.setItem(action.payload, JSON.stringify(state.searchData));
+      localStorage.setItem(action.payload, JSON.stringify(state.preventData));
     },
   },
 });
