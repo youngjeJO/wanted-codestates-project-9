@@ -5,36 +5,34 @@ import { useDispatch, useSelector } from 'react-redux';
 import { pushData, createData } from '../store/searchSlice';
 
 function Search() {
-  const [inputData, setinputData] = useState(null);
+  const [inputData, setinputData] = useState('');
   const [selectIndex, setSelectIndex] = useState(-1);
   const { preventData } = useSelector((state) => state.searchSlice);
-  const [checkError, setCheckError] = useState(true);
   const dispatch = useDispatch();
 
-  useEffect(async () => {
-    if (localStorage.getItem(inputData)) {
-      dispatch(createData(JSON.parse(localStorage.getItem(inputData))));
-    } else if (inputData) {
-      try {
+  useEffect(() => {
+    if (!inputData) {
+      return;
+    }
+    const debounce = setTimeout(async () => {
+      if (localStorage.getItem(inputData)) {
+        dispatch(createData(JSON.parse(localStorage.getItem(inputData))));
+      } else if (!localStorage.getItem(inputData)) {
         const { data } = await axios.get(
           `${process.env.REACT_APP_SEARCH_KEY}?name=${inputData}`
         );
         dispatch(createData(data.slice(0, 7)));
-      } catch {
-        setCheckError(!checkError);
       }
-    }
+    }, 1000);
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      clearTimeout(debounce);
+    };
   }, [inputData, selectIndex]);
 
-  let debounve;
   const onChange = (e) => {
-    const inputVal = e.target.value.trim();
-    if (debounve) {
-      clearTimeout(debounve);
-    }
-    debounve = setTimeout(() => {
-      setinputData(inputVal);
-    }, 400);
+    setinputData(e.target.value.trim());
   };
 
   const searchItem = (e) => {
@@ -73,6 +71,7 @@ function Search() {
         <input
           type="text"
           placeholder="질환명을 입력해 주세요"
+          value={inputData}
           onChange={onChange}
           onKeyDown={keyDown}
         />
