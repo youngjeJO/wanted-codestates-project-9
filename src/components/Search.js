@@ -7,13 +7,16 @@ import { pushData, createData } from '../store/searchSlice';
 function Search() {
   const [inputData, setinputData] = useState('');
   const [selectIndex, setSelectIndex] = useState(-1);
-  const { preventData } = useSelector((state) => state.searchSlice);
+  const { dataList } = useSelector((state) => state.searchSlice);
+  // const { loading, setLoading } = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (!inputData) {
+      dispatch(createData([]));
       return;
     }
+
     const debounce = setTimeout(async () => {
       if (localStorage.getItem(inputData)) {
         dispatch(createData(JSON.parse(localStorage.getItem(inputData))));
@@ -21,9 +24,10 @@ function Search() {
         const { data } = await axios.get(
           `${process.env.REACT_APP_SEARCH_KEY}?name=${inputData}`
         );
+
         dispatch(createData(data.slice(0, 7)));
       }
-    }, 1000);
+    }, 600);
 
     // eslint-disable-next-line consistent-return
     return () => {
@@ -37,16 +41,17 @@ function Search() {
 
   const searchItem = (e) => {
     e.preventDefault();
+
     if (selectIndex !== -1) {
       setSelectIndex(-1);
       dispatch(pushData(inputData));
-    } else {
+    } else if (dataList) {
       dispatch(pushData(inputData));
     }
   };
 
   const keyDown = (e) => {
-    const dataLenght = preventData.slice(0, 7).length;
+    const dataLenght = dataList.slice(0, 7).length;
     const selectedItem = document.querySelectorAll('.resultList');
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -80,13 +85,13 @@ function Search() {
         </button>
       </SearchBar>
       <Result inputData={inputData}>
-        {preventData.length >= 1 ? (
+        {dataList.length >= 1 ? (
           <ResultItem className="listTitle">추천 검색어</ResultItem>
         ) : (
-          <ResultItem className="listTitle">검색어 없음</ResultItem>
+          <ResultItem className="listTitle">검색중 ...</ResultItem>
         )}
         {inputData
-          ? preventData.map((item, index) => (
+          ? dataList.map((item, index) => (
               <ResultItem
                 className="resultList"
                 selected={index === selectIndex}
