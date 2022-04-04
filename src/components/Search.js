@@ -1,14 +1,14 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { pushData, createData } from '../store/searchSlice';
+import { pushData, createData, loadingData } from '../store/searchSlice';
 
 function Search() {
   const [inputData, setinputData] = useState('');
   const [selectIndex, setSelectIndex] = useState(-1);
-  const { dataList } = useSelector((state) => state.searchSlice);
-  // const { loading, setLoading } = useState(true);
+  const { dataList, loading } = useSelector((state) => state.searchSlice);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,12 +20,17 @@ function Search() {
     const debounce = setTimeout(async () => {
       if (localStorage.getItem(inputData)) {
         dispatch(createData(JSON.parse(localStorage.getItem(inputData))));
+        if (JSON.parse(localStorage.getItem(inputData)).length === 0) {
+          dispatch(loadingData(false));
+        }
       } else if (!localStorage.getItem(inputData)) {
         const { data } = await axios.get(
           `${process.env.REACT_APP_SEARCH_KEY}?name=${inputData}`
         );
-
         dispatch(createData(data.slice(0, 7)));
+        if (data.length === 0) {
+          dispatch(loadingData(false));
+        }
       }
     }, 600);
 
@@ -33,7 +38,7 @@ function Search() {
     return () => {
       clearTimeout(debounce);
     };
-  }, [inputData, selectIndex]);
+  }, [inputData, selectIndex, loading]);
 
   const onChange = (e) => {
     setinputData(e.target.value.trim());
@@ -85,11 +90,13 @@ function Search() {
         </button>
       </SearchBar>
       <Result inputData={inputData}>
-        {dataList.length >= 1 ? (
-          <ResultItem className="listTitle">추천 검색어</ResultItem>
-        ) : (
-          <ResultItem className="listTitle">검색중 ...</ResultItem>
-        )}
+        <ResultItem>
+          {loading
+            ? dataList.length >= 1
+              ? '추천 검색어'
+              : '검색중 ...'
+            : '검색어 없음'}
+        </ResultItem>
         {inputData
           ? dataList.map((item, index) => (
               <ResultItem
