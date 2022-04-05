@@ -91,3 +91,27 @@
 
 - api가 git에 노출되지 않도록 .env를 사용해 환경변수에 api를 넣고 gitignore를 이용해 git에 업로드 되지 않도록 하였습니다.
 - 환경변수를 사용한 배포는 처음이였는데 배포 후에 api가 호출되지 않고 undefind가 console에 찍히는걸 발견하였습니다. 이번 과제 배포는 netlify를 사용했는데 netlify와 같은 배포를 도와주는 사이트는 github와 연동하여 레포지토리에 있는 코드로 배포를 도와주는데 gitignore를 사용해 api가 올라가지 않아 호출을 하지 못하는 상황인 것을 알게되었습니다. 그렇기 때문에 netlify 측에 환경변수를 입력해줘야한다는 것을 알아냈고 netlify 홈페이지 설정페이지에서 쉽게 설정할 수 있다는 것을 알게되어 정상 작동하도록 구현할 수 있었습니다.
+
+### 어려웠던 점 
+
+- 데이터 값이 없는 것을 검색어 없음으로 표시하는데 있어서 뜻 밖에 어려움을 겪었습니다.
+- 단순히 데이터의 length가 0인것에 검색어 없음을 주면 되겠다고 생각했으나 검색중... 과 겹치면서 새로운 상태값을 사용해 적용해야한다는 것을 알게되었습니다. 처음에는 search.js 안에서 상태를 만들려고 로직을 구상했으나 store에서 관리중인 상태와 함께 생각해야한다는 것을 먼저 알지 못해 더 오랜 시간이 걸리게되었습니다.
+- 이 후에 search.js에서는 데이터가 불러올 때 예외 처리를 하고 store에서 상태를 하나 만들어 관리하는 것으로 해결할 수 있었습니다.
+
+```
+if (localStorage.getItem(inputData)) {
+        dispatch(createData(JSON.parse(localStorage.getItem(inputData))));
+        if (JSON.parse(localStorage.getItem(inputData)).length === 0) {
+          dispatch(loadingData(false));
+        }
+      } else if (!localStorage.getItem(inputData)) {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_SEARCH_KEY}?name=${inputData}`
+        );
+        dispatch(createData(data.slice(0, 7)));
+        if (data.length === 0) {
+          dispatch(loadingData(false));
+        }
+      }
+ ```
+ 
