@@ -8,6 +8,7 @@ import { pushData, createData, loadingData } from '../store/searchSlice';
 function Search() {
   const [inputData, setinputData] = useState('');
   const [selectIndex, setSelectIndex] = useState(-1);
+  // let preventData = useRef(null);
   const { dataList, loading } = useSelector((state) => state.searchSlice);
   const dispatch = useDispatch();
 
@@ -71,6 +72,22 @@ function Search() {
     }
   };
 
+  const onFocus = () => {
+    console.log(localStorage);
+    for (let i = 0; i < localStorage.length; i++) {
+      console.log(localStorage.key(i));
+    }
+
+    //  JSON.parse(localStorage.key());
+    //   console.log(preventData);
+    //   for(const key of keys) {
+    //     // value 찾기
+    //     const value = window.localStorage.getItem(key);
+    //     // 결과 출력
+    //     document.write(key + " : " + value + "<br />");
+    //     }
+  };
+
   return (
     <MainContainer>
       <Textbox>
@@ -84,19 +101,20 @@ function Search() {
           value={inputData}
           onChange={onChange}
           onKeyDown={keyDown}
+          onFocus={onFocus}
         />
         <button type="button" onClick={searchItem}>
           검색
         </button>
       </SearchBar>
       <Result inputData={inputData}>
-        <ResultItem>
+        <ResultTitle>
           {loading
             ? dataList.length >= 1
               ? '추천 검색어'
               : '검색중 ...'
             : '검색어 없음'}
-        </ResultItem>
+        </ResultTitle>
         {inputData
           ? dataList.map((item, index) => (
               <ResultItem
@@ -186,4 +204,10 @@ const ResultItem = styled.li`
   :hover {
     background-color: #eeeeee;
   }
+`;
+
+const ResultTitle = styled.li`
+  padding: 5px 10px;
+  list-style: none;
+  border-radius: 40px;
 `;
