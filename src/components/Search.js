@@ -160,7 +160,7 @@ const SearchBar = styled.form`
   overflow: hidden;
   input {
     margin: 0;
-    padding: 0;
+    padding: 0 10px;
     width: 80%;
     height: 100%;
     border: none;
@@ -176,6 +176,15 @@ const SearchBar = styled.form`
     font-size: 16px;
     border: none;
     cursor: pointer;
+  }
+  @media screen and (max-width: 450px) {
+    width: 90%;
+    input {
+      width: 300px;
+    }
+    button {
+      width: 60px;
+    }
   }
 `;
 
