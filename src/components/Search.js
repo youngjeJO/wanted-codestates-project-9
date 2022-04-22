@@ -26,7 +26,7 @@ function Search() {
         }
       } else if (!localStorage.getItem(inputData)) {
         const { data } = await axios.get(
-          `${process.env.REACT_APP_SEARCH_KEY}?name=${inputData}`
+          `${process.env.REACT_APP_API_KEY}?name=${inputData}`
         );
         dispatch(createData(data.slice(0, 7)));
         if (data.length === 0) {
