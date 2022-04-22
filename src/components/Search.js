@@ -8,7 +8,6 @@ import { pushData, createData, loadingData } from '../store/searchSlice';
 function Search() {
   const [inputData, setinputData] = useState('');
   const [selectIndex, setSelectIndex] = useState(-1);
-  // let preventData = useRef(null);
   const { dataList, loading } = useSelector((state) => state.searchSlice);
   const dispatch = useDispatch();
 
@@ -72,22 +71,6 @@ function Search() {
     }
   };
 
-  const onFocus = () => {
-    console.log(localStorage);
-    for (let i = 0; i < localStorage.length; i++) {
-      console.log(localStorage.key(i));
-    }
-
-    //  JSON.parse(localStorage.key());
-    //   console.log(preventData);
-    //   for(const key of keys) {
-    //     // value 찾기
-    //     const value = window.localStorage.getItem(key);
-    //     // 결과 출력
-    //     document.write(key + " : " + value + "<br />");
-    //     }
-  };
-
   return (
     <MainContainer>
       <Textbox>
@@ -101,7 +84,6 @@ function Search() {
           value={inputData}
           onChange={onChange}
           onKeyDown={keyDown}
-          onFocus={onFocus}
         />
         <button type="button" onClick={searchItem}>
           검색
@@ -160,7 +142,7 @@ const SearchBar = styled.form`
   overflow: hidden;
   input {
     margin: 0;
-    padding: 0;
+    padding: 0 10px;
     width: 80%;
     height: 100%;
     border: none;
@@ -176,6 +158,15 @@ const SearchBar = styled.form`
     font-size: 16px;
     border: none;
     cursor: pointer;
+  }
+  @media screen and (max-width: 450px) {
+    width: 90%;
+    input {
+      width: 300px;
+    }
+    button {
+      width: 60px;
+    }
   }
 `;
 
