@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { FiSearch } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { pushData, createData, loadingData } from '../store/searchSlice';
 
@@ -78,6 +79,7 @@ function Search() {
         <p>온라인으로 참여하기</p>
       </Textbox>
       <SearchBar onSubmit={searchItem}>
+        <FiSearch className="icon" />
         <input
           type="text"
           placeholder="질환명을 입력해 주세요"
@@ -103,6 +105,7 @@ function Search() {
                 className="resultList"
                 selected={index === selectIndex}
               >
+                <FiSearch className="icon" />
                 {item.name}
               </ResultItem>
             ))
@@ -134,16 +137,23 @@ const Textbox = styled.div`
 const SearchBar = styled.form`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   height: 50px;
   width: 50%;
   box-sizing: border-box;
   background-color: #ffffff;
   border-radius: 40px;
   overflow: hidden;
+  .icon {
+    padding-left: 10px;
+    width: 10%;
+    font-size: 20px;
+  }
+
   input {
     margin: 0;
     padding: 0 10px;
-    width: 80%;
+    width: 70%;
     height: 100%;
     border: none;
     outline: none;
@@ -191,6 +201,12 @@ const ResultItem = styled.li`
   list-style: none;
   border-radius: 40px;
   background-color: ${({ selected }) => (selected ? '#eeeeee' : '#ffffff')};
+
+  .icon {
+    padding-right: 10px;
+    width: 10%;
+    font-size: 15px;
+  }
 
   :hover {
     background-color: #eeeeee;
