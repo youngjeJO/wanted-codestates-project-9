@@ -193,11 +193,12 @@ const Result = styled.ul`
   }
   .listTitle:hover {
     background-color: #ffffff;
-  }
-
+  } 
   @media screen and (max-width: 450px) {
     width: 90%;
+    }
   }
+  
 `;
 
 const ResultItem = styled.li`
