@@ -66,7 +66,7 @@
 
     ```
 
-### 키도드 이동 구현
+### 키보드 이동 구현
 - onkeyDown event를 이용해 ArrowDown과 ArrowUp 키를 눌렀을 때 마다 index에 +1 또는  -1을 주어  selectIndex와 ResultItem의 index가 일치하는 target에 background-color를 바꿔줘 focus가 되는 것처럼 보이게 하여 키보드로 ResultItem를 이동하게 하였습니다. 
 
 
